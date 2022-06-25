@@ -48,7 +48,6 @@
 
 
     <script type="text/javascript">
-
         // 按钮触发生成正太信息事件
         function createInfo() {
             var arrayText = document.getElementById("ZTText").value;
@@ -225,27 +224,23 @@
     </script>
 
     <script>
-        var check = Math.floor(Math.random() * 3);
-        var type = "shizuku";
-        var position = "right";
+        let check = Math.floor(Math.random() * 6);
+        let type = "shizuku";
+        let position = "right";
         if (check == 0) {
             type = "koharu";
         }
 
-        //这是插件模型，可以任意选择想要添加的2d动画
-        // var jsonPath = "https://unpkg.com/live2d-widget-model-" + type + "@1.0.5/assets/" + type + ".model.json";
- 
-
-        var width=200;
-        var height=320;
-        var hOffset=0;
-        //这是插件模型，可以任意选择想要添加的2d动画
-        var jsonPath = "package/" + type + "/assets/" + type + ".model.json";
-         if (check == 1) {
-            jsonPath="/package/snow_miku/assets/model.json";
-            width=500;
-            height=500;
-            hOffset=-50;
+        let width = 200;
+        let height = 320;
+        let hOffset = 0;
+        // 这是插件模型，可以任意选择想要添加的2d动画
+        let jsonPath = "package/" + type + "/assets/" + type + ".model.json";
+        if (check >= 1 && check <= 3) {
+            jsonPath = "/package/snow_miku/assets/model.json";
+            width = 500;
+            height = 500;
+            hOffset = -50;
         }
         L2Dwidget.init({
             "model": {
