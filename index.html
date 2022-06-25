@@ -225,7 +225,7 @@
     </script>
 
     <script>
-        var check = Math.floor(Math.random() * 2);
+        var check = Math.floor(Math.random() * 3);
         var type = "shizuku";
         var position = "right";
         if (check == 0) {
@@ -234,7 +234,19 @@
 
         //这是插件模型，可以任意选择想要添加的2d动画
         // var jsonPath = "https://unpkg.com/live2d-widget-model-" + type + "@1.0.5/assets/" + type + ".model.json";
+ 
+
+        var width=200;
+        var height=320;
+        var hOffset=0;
+        //这是插件模型，可以任意选择想要添加的2d动画
         var jsonPath = "package/" + type + "/assets/" + type + ".model.json";
+         if (check == 1) {
+            jsonPath="/package/snow_miku/assets/model.json";
+            width=500;
+            height=500;
+            hOffset=-50;
+        }
         L2Dwidget.init({
             "model": {
                 "jsonPath": jsonPath,
@@ -242,9 +254,9 @@
             },
             "display": {
                 "position": "right",
-                "width": 180,
-                "height": 320,
-                "hOffset": 0,
+                "width": width,
+                "height": height,
+                "hOffset": hOffset,
                 "vOffset": 0
             },
             "mobile": {
