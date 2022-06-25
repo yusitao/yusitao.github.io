@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link href="favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>正太分布例子</title>
+    <script src="https://lib.baomitu.com/echarts/4.7.0/echarts.min.js"></script>
+</head>
+
+<body>
+    <div>
+        <textarea style="margin: 0px; width: 334px; height: 75px;" placeholder='输入所有组数由半角逗号分隔数字","'
+            id="ZTText"></textarea>
+        <button onclick="createInfo()" type="button">生成正太分布信息</button>
+    </div>
+
+    <div>
+        <p>结果</p>
+        <label>数据总数：</label><label id="sjzs"></label><br />
+        <label>平均数：</label><label id="pjs"></label><br />
+        <label>标准差：</label><label id="stdev"></label><br />
+        <label>方差：</label><label id="fc"></label><br />
+        <label>视图：</label>
+        <div id="main" style="width: 600px;height:400px;"></div>
+    </div>
+
+    <script type="text/javascript">
+
+        // 按钮触发生成正太信息事件
+        function createInfo() {
+            var arrayText = document.getElementById("ZTText").value;
+            arrayText = arrayText.replace(/\s/g, '');
+            var arrDateTemp = arrayText.split(",");
+            var arrDate = [];
+            arrDateTemp.forEach(function (item, index) {
+                arrDate.push(item * 1.0)
+            });
+            calc(arrDate);
+        }
+
+        // 数字格式化保留小数点后digit位数
+        function formatFloat(formula, digit) {
+            var pow = Math.pow(10, digit);
+            return parseInt(formula * pow, 10) / pow;
+        };
+
+        /**
+         * 计算标准正态分布函数
+         * @param x 数据
+         * @param mean 平均值
+         * @param stdev 标准差
+        */
+        function normalDistribution(x, mean, stdev) {
+            return (1 / (Math.sqrt(2 * Math.PI) * stdev)) * Math.exp(-1 * ((x - mean) * (x - mean)) / (2 * stdev * stdev));
+        }
+
+        // 通过数组计算生成正太信息
+        function calc(arrDate) {
+            // 临时数据
+            var reqDates = [];
+            reqDates = arrDate;
+            // 临时结果数组
+            var tempResult = [];
+            // 去重临时结果数组
+            var tempResultQC = [];
+            // 平均值（期望）
+            var mean = 0.0;
+            // 标准差
+            var stdev = 0.0;
+            // 总次数
+            var n = reqDates.length;
+            // 数组和
+            var datesSum = 0;
+            reqDates.forEach(function (value, index) {
+                datesSum += value;
+            });
+            // 赋值平均值
+            mean = datesSum * 1.0 / n;
+            var sumCha = 0;
+            reqDates.forEach(function (value, index) {
+                sumCha += (value - mean) * (value - mean) * 1.0;
+            });
+            // 赋值标准差
+            stdev = Math.sqrt(sumCha / n);
+            // 赋值临时结果
+            reqDates.forEach(function (value, index) {
+                tempResult.push({ x: value, rate: normalDistribution(value, mean, stdev) });
+            });
+
+            // 去重
+            tempResult.forEach(function (item, index) {
+                // var noX = tempResultQC.filter((x) => x.x == item.x).length == 0;
+                // 兼容IE，IE不支持lambda
+                var noX = tempResultQC.filter(filter('x', item.x)).length == 0;
+                if (noX) {
+                    tempResultQC.push(item);
+                }
+            });
+            // tempResultQC = tempResult.filter((item, index) => tempResult.findIndex(x=>x.x==item.x) === index);
+            // 排序
+            var res = tempResultQC.sort(compare('x'));
+            // 获取x，y信息
+            // xData = res.map(item => { return item.x });
+            // yData = res.map(item => { return item.rate });
+            // 兼容IE，IE不支持lambda
+            xData = res.map(mapInfo('x'));
+            yData = res.map(mapInfo('rate'));
+
+            // 显示正太分布基本信息
+            document.getElementById("sjzs").innerHTML = n;
+            document.getElementById("pjs").innerHTML = formatFloat(mean, 2);
+            document.getElementById("stdev").innerHTML = formatFloat(stdev, 2);
+            document.getElementById("fc").innerHTML = formatFloat(stdev * stdev, 2);
+            // 生成正太分布图
+            createView(xData, yData);
+        }
+        // 筛选
+        function filter(property, value) {
+            return function (item) {
+                return item[property] == value;
+            }
+        }
+        // 映射
+        function mapInfo(property) {
+            return function (item) {
+                return item[property];
+            };
+        }
+        // 排序方法
+        function compare(property) {
+            return function (a, b) {
+                var value1 = a[property];
+                var value2 = b[property];
+                return value1 - value2;// 升序
+            };
+        }
+
+        // 生成视图
+        function createView(xData, yData) {
+            var colors = ['#7CCD7C', '#d14a61', '#675bba'];
+            var option = {
+                color: colors,
+
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'cross'
+                    }
+                },
+                grid: {
+                    right: '20%'
+                },
+                toolbox: {
+                    feature: {
+                        dataView: {
+                            show: true,
+                            readOnly: false
+                        },
+                        restore: {
+                            show: true
+                        },
+                        saveAsImage: {
+                            show: true
+                        }
+                    }
+                },
+                legend: {
+                    data: ['正态分布']
+                },
+                xAxis: [{
+                    type: 'category',
+                    axisTick: {
+                        alignWithLabel: true
+                    },
+                    data: xData
+                }],
+                yAxis: [{
+                    type: 'value',
+                    position: 'left',
+                },
+                ],
+                series: [{
+                    name: '正态分布',
+                    type: 'line',
+                    animation: false,
+                    showSymbol: false,
+                    itemStyle: {
+                        color: "red"
+                    },
+                    data: yData
+                },
+                ]
+            };
+
+            // 基于准备好的dom，初始化echarts实例
+            var myChart = echarts.init(document.getElementById('main'));
+
+            // 使用刚指定的配置项和数据显示图表。
+            myChart.setOption(option);
+        }
+
+    </script>
+</body>
+
+</html>
