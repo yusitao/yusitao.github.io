@@ -22,7 +22,7 @@
         }
     </style>
     <!-- echart-->
-    <script src="https://lib.baomitu.com/echarts/4.7.0/echarts.min.js"></script>
+    <script src="package/echarts.min.js"></script>
     <!-- 萌妹子图像 -->
     <script src="package/L2Dwidget.min.js"></script>
     <!-- 鼠标滑动出气泡效果 -->
@@ -235,9 +235,9 @@
         let height = 320;
         let hOffset = 0;
         // 这是插件模型，可以任意选择想要添加的2d动画
-        let jsonPath = "package/" + type + "/assets/" + type + ".model.json";
+        let jsonPath = "package/L2Dmodels/" + type + "/assets/" + type + ".model.json";
         if (check >= 1 && check <= 3) {
-            jsonPath = "/package/snow_miku/assets/model.json";
+            jsonPath = "/package/L2Dmodels/snow_miku/assets/model.json";
             width = 500;
             height = 500;
             hOffset = -50;
